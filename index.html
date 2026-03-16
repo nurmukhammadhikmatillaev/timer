@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style/style.css">
+    <title>😎</title>
+    <style>
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" data-tab="stopwatch">Секундомер</button>
+            <button class="tab" data-tab="timer">Таймер</button>
+            <button class="tab" data-tab="alarm">Будильник</button>
+            <button class="tab" data-tab="world">Мировое время</button>
+        </div>
+        
+        <div id="stopwatch" class="content">
+            <div class="display" id="stopwatch-display">00:00.0</div>
+            <div class="buttons">
+                <button id="startBtn">Старт</button>
+                <button id="stopBtn">Стоп</button>
+                <button id="resetBtn">Сброс</button>
+                ghg
+            </div>
+        </div>
+        
+        <div id="timer" class="content hidden">
+            <div class="input-group">
+                <input type="number" id="timer-minutes" placeholder="Минуты" min="0" max="180" value="5">
+            </div>
+            <div class="display" id="timer-display">05:00.0</div>
+            <div class="buttons">
+                <button id="timerStartBtn">Старт</button>
+                <button id="timerStopBtn">Стоп</button>
+                <button id="timerResetBtn">Сброс</button>
+            </div>
+        </div>
+        
+        <div id="alarm" class="content hidden">
+            <div class="input-group">
+                <input type="time" id="alarm-time" value="08:00">
+            </div>
+            <div class="display" id="alarm-display">08:00:00</div>
+            <div class="buttons">
+                <button id="setAlarmBtn">Установить</button>
+                <button id="clearAlarmBtn" class="danger">Сброс</button>
+            </div>
+            <div id="alarm-status" style="margin-top: 10px; color: #666;"></div>
+        </div>
+        
+        <div id="world" class="content hidden">
+            <div class="world-cities" id="world-times"></div>
+        </div>
+    </div>
+
+    <audio id="alarm-sound" src="audio/air-siren-air-raid-alarm-air-siren-alarm (1).mp3" preload="auto"></audio>
+    
+    <script src="script.js"></script>
+</body>
+</html>
