@@ -1,247 +1,284 @@
+        const tabs = document.querySelectorAll('.tab');
+        const contents = {
+            stopwatch: document.getElementById('stopwatch'),
+            timer: document.getElementById('timer'),
+            alarm: document.getElementById('alarm'),
+            world: document.getElementById('world')
+        };
 
+        const stopwatchDisplay = document.getElementById('stopwatch-display');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const resetBtn = document.getElementById('resetBtn');
 
+        let stopwatchStartTime = 0;
+        let stopwatchElapsed = 0;
+        let stopwatchInterval = null;
+        let stopwatchRunning = false;
 
-const tabs = document.querySelectorAll('.tab');
-const contents = {
-    stopwatch: document.getElementById('stopwatch'),
-    timer: document.getElementById('timer'),
-    alarm: document.getElementById('alarm'),
-    world: document.getElementById('world')
-};
+        function formatStopwatch(ms) {
+            const totalSeconds = Math.floor(ms / 1000);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            const tenths = Math.floor((ms % 1000) / 100);
+            return `${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}.${tenths}`;
+        }
 
-const stopwatchDisplay = document.getElementById('stopwatch-display');
-const startBtn = document.getElementById('startBtn');
-const stopBtn = document.getElementById('stopBtn');
-const resetBtn = document.getElementById('resetBtn');
+        function updateStopwatch() {
+            if (stopwatchRunning) {
+                stopwatchElapsed = Date.now() - stopwatchStartTime;
+                stopwatchDisplay.textContent = formatStopwatch(stopwatchElapsed);
+            }
+        }
 
-let stopwatchStartTime = 0;
-let stopwatchElapsed = 0;
-let stopwatchInterval = null;
-let stopwatchRunning = false;
+        function startStopwatch() {
+            if (!stopwatchRunning) {
+                stopwatchRunning = true;
+                stopwatchStartTime = Date.now() - stopwatchElapsed;
+                stopwatchInterval = setInterval(updateStopwatch, 100);
+            }
+        }
 
-function formatStopwatch(ms) {
-    const totalSeconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    const tenths = Math.floor((ms % 1000) / 100);
-    return `${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}.${tenths}`;
-}
+        function stopStopwatch() {
+            if (stopwatchRunning) {
+                stopwatchRunning = false;
+                clearInterval(stopwatchInterval);
+                stopwatchInterval = null;
+            }
+        }
 
-function updateStopwatch() {
-    if (stopwatchRunning) {
-        stopwatchElapsed = Date.now() - stopwatchStartTime;
-        stopwatchDisplay.textContent = formatStopwatch(stopwatchElapsed);
-    }
-}
+        function resetStopwatch() {
+            stopStopwatch();
+            stopwatchElapsed = 0;
+            stopwatchDisplay.textContent = formatStopwatch(0);
+        }
 
-function startStopwatch() {
-    if (!stopwatchRunning) {
-        stopwatchRunning = true;
-        stopwatchStartTime = Date.now() - stopwatchElapsed;
-        stopwatchInterval = setInterval(updateStopwatch, 100);
-    }
-}
+        const timerDisplay = document.getElementById('timer-display');
+        const timerMinutes = document.getElementById('timer-minutes');
+        const timerStartBtn = document.getElementById('timerStartBtn');
+        const timerStopBtn = document.getElementById('timerStopBtn');
+        const timerResetBtn = document.getElementById('timerResetBtn');
 
-function stopStopwatch() {
-    if (stopwatchRunning) {
-        stopwatchRunning = false;
-        clearInterval(stopwatchInterval);
-        stopwatchInterval = null;
-    }
-}
+        let timerEndTime = 0;
+        let timerInterval = null;
+        let timerRunning = false;
+        let timerValue = 5 * 60 * 1000;
 
-function resetStopwatch() {
-    stopStopwatch();
-    stopwatchElapsed = 0;
-    stopwatchDisplay.textContent = formatStopwatch(0);
-}
+        function formatTimer(ms) {
+            if (ms < 0) ms = 0;
+            const totalSeconds = Math.floor(ms / 1000);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            const tenths = Math.floor((ms % 1000) / 100);
+            return `${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}.${tenths}`;
+        }
 
+        function updateTimer() {
+            if (timerRunning) {
+                const remaining = timerEndTime - Date.now();
+                if (remaining <= 0) {
+                    timerDisplay.textContent = formatTimer(0);
+                    stopTimer();
+                    playAlarm('timer');
+                    alert('⏰ Таймер сработал!');
+                } else {
+                    timerDisplay.textContent = formatTimer(remaining);
+                }
+            }
+        }
 
-const timerDisplay = document.getElementById('timer-display');
-const timerMinutes = document.getElementById('timer-minutes');
-const timerStartBtn = document.getElementById('timerStartBtn');
-const timerStopBtn = document.getElementById('timerStopBtn');
-const timerResetBtn = document.getElementById('timerResetBtn');
+        function startTimer() {
+            if (!timerRunning) {
+                const minutes = parseInt(timerMinutes.value) || 0;
+                timerValue = minutes * 60 * 1000;
+                timerEndTime = Date.now() + timerValue;
+                timerRunning = true;
+                timerInterval = setInterval(updateTimer, 100);
+            }
+        }
 
-let timerEndTime = 0;
-let timerInterval = null;
-let timerRunning = false;
-let timerValue = 5 * 60 * 1000; 
+        function stopTimer() {
+            if (timerRunning) {
+                timerRunning = false;
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
 
-function formatTimer(ms) {
-    if (ms < 0) ms = 0;
-    const totalSeconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    const tenths = Math.floor((ms % 1000) / 100);
-    return `${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}.${tenths}`;
-}
-
-function updateTimer() {
-    if (timerRunning) {
-        const remaining = timerEndTime - Date.now();
-        if (remaining <= 0) {
-         
-            timerDisplay.textContent = formatTimer(0);
+        function resetTimer() {
             stopTimer();
-            playAlarm();
-            alert('⏰ Таймер сработал!');
-        } else {
-            timerDisplay.textContent = formatTimer(remaining);
+            const minutes = parseInt(timerMinutes.value) || 0;
+            timerDisplay.textContent = formatTimer(minutes * 60 * 1000);
         }
-    }
-}
 
-function startTimer() {
-    if (!timerRunning) {
-        const minutes = parseInt(timerMinutes.value) || 0;
-        timerValue = minutes * 60 * 1000;
-        timerEndTime = Date.now() + timerValue;
-        timerRunning = true;
-        timerInterval = setInterval(updateTimer, 100);
-    }
-}
+        const alarmTimeInput = document.getElementById('alarm-time');
+        const alarmDisplay = document.getElementById('alarm-display');
+        const setAlarmBtn = document.getElementById('setAlarmBtn');
+        const clearAlarmBtn = document.getElementById('clearAlarmBtn');
+        const alarmStatus = document.getElementById('alarm-status');
+        const stopAlarmBtn = document.getElementById('stop-alarm-btn');
+        const alarmSound = document.getElementById('alarm-sound');
 
-function stopTimer() {
-    if (timerRunning) {
-        timerRunning = false;
-        clearInterval(timerInterval);
-        timerInterval = null;
-    }
-}
+        let alarmTime = null;
+        let alarmActive = false;
+        let alarmTriggered = false;
+        let alarmPlaying = false;
 
-function resetTimer() {
-    stopTimer();
-    const minutes = parseInt(timerMinutes.value) || 0;
-    timerDisplay.textContent = formatTimer(minutes * 60 * 1000);
-}
+        function updateAlarmDisplay() {
+            const now = new Date();
+            alarmDisplay.textContent = now.toLocaleTimeString('ru-RU');
+            
+            if (alarmActive && !alarmTriggered && alarmTime) {
+                const currentHours = now.getHours();
+                const currentMinutes = now.getMinutes();
+                const currentTotalMinutes = currentHours * 60 + currentMinutes;
+                
+                if (currentTotalMinutes === alarmTime) {
+                    alarmTriggered = true;
+                    playAlarm('alarm');
+                    alarmStatus.textContent = '⏰ БУДИЛЬНИК СРАБОТАЛ!';
+                    alarmStatus.classList.add('alarm-active');
+                    stopAlarmBtn.classList.remove('hidden');
+                }
+            }
+        }
 
+        function playAlarm(source) {
+            if (!alarmPlaying) {
+                alarmSound.loop = true;
+                alarmSound.play()
+                    .then(() => {
+                        alarmPlaying = true;
+                    })
+                    .catch(e => {
+                        document.addEventListener('click', function playOnClick() {
+                            alarmSound.play()
+                                .then(() => {
+                                    alarmPlaying = true;
+                                })
+                                .catch(err => console.log(err));
+                            document.removeEventListener('click', playOnClick);
+                        });
+                    });
+            }
+        }
 
-const alarmTimeInput = document.getElementById('alarm-time');
-const alarmDisplay = document.getElementById('alarm-display');
-const setAlarmBtn = document.getElementById('setAlarmBtn');
-const clearAlarmBtn = document.getElementById('clearAlarmBtn');
-const alarmStatus = document.getElementById('alarm-status');
-const alarmSound = document.getElementById('alarm-sound');
+        function stopAlarm() {
+            if (alarmPlaying) {
+                alarmSound.pause();
+                alarmSound.currentTime = 0;
+                alarmPlaying = false;
+                alarmSound.loop = false;
+            }
+            
+            if (alarmTriggered) {
+                alarmTriggered = false;
+                alarmStatus.classList.remove('alarm-active');
+                stopAlarmBtn.classList.add('hidden');
+                
+                if (alarmActive) {
+                    alarmStatus.textContent = `Будильник установлен на ${Math.floor(alarmTime / 60).toString().padStart(2, '0')}:${(alarmTime % 60).toString().padStart(2, '0')} (сработает завтра)`;
+                }
+            }
+        }
 
-let alarmTime = null;
-let alarmInterval = null;
-let alarmActive = false;
+        function setAlarm() {
+            const timeStr = alarmTimeInput.value;
+            if (timeStr) {
+                const [hours, minutes] = timeStr.split(':').map(Number);
+                alarmTime = hours * 60 + minutes;
+                alarmActive = true;
+                alarmTriggered = false;
+                stopAlarm();
+                alarmStatus.textContent = `Будильник установлен на ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+                alarmStatus.classList.remove('alarm-active');
+                stopAlarmBtn.classList.add('hidden');
+                
+                const now = new Date();
+                const currentTotalMinutes = now.getHours() * 60 + now.getMinutes();
+                if (currentTotalMinutes > alarmTime) {
+                    alarmStatus.textContent += ' (сработает завтра)';
+                }
+            }
+        }
 
-function updateAlarmDisplay() {
-    const now = new Date();
-    alarmDisplay.textContent = now.toLocaleTimeString('ru-RU');
-    
-    // Проверяем будильник
-    if (alarmActive && alarmTime) {
-        const currentTime = now.getHours() * 60 + now.getMinutes();
-        if (currentTime === alarmTime) {
-            playAlarm();
-            alarmStatus.textContent = '⏰ Будильник сработал!';
+        function clearAlarm() {
             alarmActive = false;
+            alarmTime = null;
+            alarmTriggered = false;
+            stopAlarm();
+            alarmStatus.textContent = 'Будильник сброшен';
+            alarmStatus.classList.remove('alarm-active');
+            stopAlarmBtn.classList.add('hidden');
         }
-    }
-}
 
-function setAlarm() {
-    const timeStr = alarmTimeInput.value;
-    if (timeStr) {
-        const [hours, minutes] = timeStr.split(':').map(Number);
-        alarmTime = hours * 60 + minutes;
-        alarmActive = true;
-        alarmStatus.textContent = `Будильник установлен на ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-    }
-}
+        const worldTimes = document.getElementById('world-times');
 
-function clearAlarm() {
-    alarmActive = false;
-    alarmTime = null;
-    alarmStatus.textContent = 'Будильник сброшен';
-}
+        const cities = [
+            { name: 'Москва', offset: 3 },
+            { name: 'Лондон', offset: 0 },
+            { name: 'Нью-Йорк', offset: -4 },
+            { name: 'Токио', offset: 9 },
+            { name: 'Сидней', offset: 11 },
+            { name: 'Дубай', offset: 4 }
+        ];
 
-function playAlarm() {
-    alarmSound.play().catch(e => console.log('Не удалось воспроизвести звук'));
-}
+        function updateWorldTimes() {
+            const now = new Date();
+            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            
+            let html = '';
+            cities.forEach(city => {
+                const cityTime = new Date(utc + (3600000 * city.offset));
+                const timeStr = cityTime.toLocaleTimeString('ru-RU', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                html += `
+                    <div class="city-time">
+                        <span class="city-name">${city.name}</span>
+                        <span class="time-value">${timeStr}</span>
+                    </div>
+                `;
+            });
+            worldTimes.innerHTML = html;
+        }
 
-const worldTimes = document.getElementById('world-times');
-
-const cities = [
-    { name: 'Москва', offset: 3 },
-    { name: 'Лондон', offset: 0 },
-    { name: 'Нью-Йорк', offset: -4 },
-    { name: 'Токио', offset: 9 },
-    { name: 'Сидней', offset: 11 },
-    { name: 'Дубай', offset: 4 }
-];
-
-function updateWorldTimes() {
-    const now = new Date();
-    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-    
-    let html = '';
-    cities.forEach(city => {
-        const cityTime = new Date(utc + (3600000 * city.offset));
-        const timeStr = cityTime.toLocaleTimeString('ru-RU', {
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                Object.values(contents).forEach(content => {
+                    content.classList.add('hidden');
+                });
+                
+                const tabName = tab.getAttribute('data-tab');
+                contents[tabName].classList.remove('hidden');
+            });
         });
-        html += `
-            <div class="city-time">
-                <span class="city-name">${city.name}</span>
-                <span class="time-value">${timeStr}</span>
-            </div>
-        `;
-    });
-    worldTimes.innerHTML = html;
-}
 
+        startBtn.addEventListener('click', startStopwatch);
+        stopBtn.addEventListener('click', stopStopwatch);
+        resetBtn.addEventListener('click', resetStopwatch);
 
-tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-
-        tabs.forEach(t => t.classList.remove('active'));
-  
-        tab.classList.add('active');
-        
-   
-        Object.values(contents).forEach(content => {
-            content.classList.add('hidden');
+        timerStartBtn.addEventListener('click', startTimer);
+        timerStopBtn.addEventListener('click', stopTimer);
+        timerResetBtn.addEventListener('click', resetTimer);
+        timerMinutes.addEventListener('input', () => {
+            const minutes = parseInt(timerMinutes.value) || 0;
+            timerDisplay.textContent = formatTimer(minutes * 60 * 1000);
         });
-        
-  
-        const tabName = tab.getAttribute('data-tab');
-        contents[tabName].classList.remove('hidden');
-    });
-});
 
+        setAlarmBtn.addEventListener('click', setAlarm);
+        clearAlarmBtn.addEventListener('click', clearAlarm);
+        stopAlarmBtn.addEventListener('click', stopAlarm);
 
-startBtn.addEventListener('click', startStopwatch);
-stopBtn.addEventListener('click', stopStopwatch);
-resetBtn.addEventListener('click', resetStopwatch);
+        setInterval(updateAlarmDisplay, 1000);
+        setInterval(updateWorldTimes, 1000);
 
-
-timerStartBtn.addEventListener('click', startTimer);
-timerStopBtn.addEventListener('click', stopTimer);
-timerResetBtn.addEventListener('click', resetTimer);
-timerMinutes.addEventListener('input', () => {
-    const minutes = parseInt(timerMinutes.value) || 0;
-    timerDisplay.textContent = formatTimer(minutes * 60 * 1000);
-});
-
-
-setAlarmBtn.addEventListener('click', setAlarm);
-clearAlarmBtn.addEventListener('click', clearAlarm);
-setInterval(updateAlarmDisplay, 1000);
-
-
-updateWorldTimes();
-setInterval(updateWorldTimes, 1000);
-
-
-updateAlarmDisplay();
-updateWorldTimes();
-
-
-resetStopwatch();
-resetTimer();
+        updateAlarmDisplay();
+        updateWorldTimes();
+        resetStopwatch();
+        resetTimer();

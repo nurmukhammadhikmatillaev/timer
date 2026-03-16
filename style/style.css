@@ -1,6 +1,6 @@
-        * {
+  * {
             box-sizing: border-box;
-            font-family: Segoe Print;
+            font-family: 'Segoe Print', cursive, sans-serif;
         }
         
         body {
@@ -101,12 +101,18 @@
             background: #c53030;
         }
         
+        button.success {
+            background: #48bb78;
+        }
+        
+        button.success:hover {
+            background: #38a169;
+        }
+        
         .world-cities {
             width: 100%;
             margin-top: 20px;
         }
-
-        
         
         .city-time {
             display: flex;
@@ -147,5 +153,20 @@
         .hidden {
             display: none !important;
         }
-
-
+        
+        .alarm-active {
+            color: #e53e3e;
+            font-weight: bold;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        #stop-alarm-btn {
+            margin-top: 10px;
+            background: #e53e3e;
+        }
